@@ -1,161 +1,189 @@
-# meu primeiro API - API REST com Testes Automatizados
+# 🚀 Meu Primeiro API - Projeto de Portfólio (Estágio Backend)
 
-API RESTful completa desenvolvida com **FastAPI**, **SQLAlchemy** e **Pydantic**, acompanhada de uma suíte robusta de testes automatizados com **pytest** e relatório de cobertura (**100% de coverage**).
+<div align="center">
+
+![Python](https://img.shields.io/badge/Python-3.14-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-D71F00?style=for-the-badge&logo=sqlalchemy&logoColor=white)
+![Pydantic](https://img.shields.io/badge/Pydantic-E92063?style=for-the-badge&logo=pydantic&logoColor=white)
+![Pytest](https://img.shields.io/badge/Pytest-0A9EDC?style=for-the-badge&logo=pytest&logoColor=white)
+![Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen?style=for-the-badge)
+![CI/CD](https://img.shields.io/badge/CI-GitHub%20Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)
+
+</div>
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## 🎯 Sobre o Projeto & Motivação
 
-- **Linguagem:** Python 3.14
-- **Framework Web:** [FastAPI](https://fastapi.tiangolo.com/)
-- **Servidor ASGI:** [Uvicorn](https://www.uvicorn.org/)
-- **ORM / Banco de Dados:** [SQLAlchemy 2.0](https://www.sqlalchemy.org/) com SQLite
-- **Validação e Serialização:** [Pydantic v2](https://docs.pydantic.dev/)
-- **Testes Automatizados:** [pytest](https://docs.pytest.org/), [httpx](https://www.python-httpx.org/) e [pytest-cov](https://pytest-cov.readthedocs.io/)
+Este projeto foi desenvolvido com foco em **processos seletivos para vagas de Estágio em Desenvolvimento de Software / Backend**. 
+
+O objetivo principal foi construir uma **API RESTful completa do zero**, aplicando na prática padrões e boas práticas exigidos pelo mercado de trabalho:
+- **Clean Architecture & Separation of Concerns:** Separação clara entre modelos de dados, validações de requisição, regras de negócio e camada HTTP.
+- **Qualidade de Software & Testes:** Suíte de testes automatizados com **100% de cobertura de código** usando `pytest` e `pytest-cov`.
+- **Isolamento de Ambientes:** Testes executados em banco SQLite em memória (`StaticPool`), garantindo velocidade e zero impacto no banco de dados de desenvolvimento.
+- **Automação CI/CD:** Pipeline do **GitHub Actions** configurado para validar testes a cada `push` e `pull request`.
+- **Documentação Viva:** Contrato da API documentado automaticamente via OpenAPI (Swagger UI e ReDoc).
+
+---
+
+## 🛠️ Tecnologias e Decisões de Engenharia
+
+| Tecnologia | Finalidade | Por que foi escolhida? |
+|---|---|---|
+| **Python 3** | Linguagem Principal | Sintaxe moderna, tipagem estática com type hints e ecossistema robusto. |
+| **FastAPI** | Framework Web Assíncrono | Alta performance (baseada em Starlette e Pydantic), injeção de dependências e OpenAPI automático. |
+| **Pydantic v2** | Validação de Dados | Validação estrita de contratos de entrada e saída, evitando corrupção de dados antes de tocar o banco. |
+| **SQLAlchemy 2.0** | ORM / Persistência | Padrão da indústria para mapeamento objeto-relacional seguro e queries eficientes. |
+| **SQLite** | Banco de Dados | Leve e ideal para desenvolvimento, com suporte a instâncias in-memory ultra-rápidas para testes. |
+| **Pytest + Coverage** | Testes Automatizados | Padrão para testes unitários e de integração, com relatório detalhado de cobertura. |
+| **GitHub Actions** | Integração Contínua (CI) | Automação que impede código quebrado de subir para produção. |
 
 ---
 
 ## 📁 Estrutura do Projeto
 
+Organizado seguindo convenções profissionais de mercado:
+
 ```text
-task-manager-api/
+meu-primeiro-api/
+├── .github/workflows/
+│   └── ci.yml              # Pipeline de CI (GitHub Actions)
 ├── app/
 │   ├── __init__.py
-│   ├── config.py           # Configurações com Pydantic Settings
-│   ├── database.py         # Conexão com banco e session dependency (get_db)
-│   ├── models.py           # Modelos de dados SQLAlchemy (Task, Enums)
-│   ├── schemas.py          # Schemas Pydantic (Validação de entrada/saída)
-│   ├── crud.py             # Camada de persistência e regras de dados
-│   ├── main.py             # Instância da aplicação FastAPI e middlewares
+│   ├── config.py           # Configurações centralizadas com Pydantic Settings
+│   ├── database.py         # Configuração de engine, sessionmaker e injeção (get_db)
+│   ├── models.py           # Entidades relacionais do SQLAlchemy (Task, Enums)
+│   ├── schemas.py          # Schemas Pydantic (Validação de entrada, saída e paginação)
+│   ├── crud.py             # Camada de repositório (operações de dados isoladas)
+│   ├── main.py             # Instância do FastAPI, middlewares (CORS) e routers
 │   └── routers/
 │       ├── __init__.py
-│       ├── health.py       # Endpoint de healthcheck
-│       └── tasks.py        # Endpoints REST de tarefas (CRUD + filtros)
+│       ├── health.py       # Endpoint de monitoramento / verificação de integridade
+│       └── tasks.py        # Endpoints REST (CRUD, paginação, filtros e busca)
 ├── tests/
 │   ├── __init__.py
 │   ├── conftest.py         # Fixtures do Pytest com banco SQLite in-memory isolado
-│   ├── test_database.py    # Teste de conexão/gerador do banco
+│   ├── test_database.py    # Teste de conexão e ciclo de vida da sessão
 │   ├── test_health.py      # Testes do endpoint de healthcheck
-│   └── test_tasks.py       # 16+ testes cobrindo CRUD, paginação, filtros e erros 404/422
-├── .env.example            # Exemplo de variáveis de ambiente
-├── .gitignore              # Arquivos ignorados pelo Git
-├── pytest.ini              # Configurações do Pytest e cobertura
+│   └── test_tasks.py       # 16+ testes cobrindo CRUD, validação 422, paginação e 404
+├── .env.example            # Variáveis de ambiente de exemplo
+├── .gitignore              # Arquivos e diretórios ignorados pelo Git
+├── pytest.ini              # Configuração padrão do Pytest e cobertura
 ├── requirements.txt        # Dependências do projeto
 ├── run.sh                  # Script facilitador de execução
-└── README.md
+└── README.md               # Apresentação do projeto
 ```
 
 ---
 
-## 🚀 Como Executar
+## 🧪 Testes Automatizados (100% de Cobertura)
 
-### 1. Rodar os Testes Automatizados
+A suíte de testes cobre todos os caminhos felizes (*happy paths*), casos de borda (*edge cases*) e validações de erro:
 
-O projeto já possui os testes configurados com SQLite em memória, garantindo isolamento total (nenhum dado de teste afeta seu banco de desenvolvimento).
+- **Criação de tarefas:** Validação de campos obrigatórios, tipos e status `201 Created`.
+- **Validação de entrada (422):** Rejeição automática de títulos vazios, campos ausentes e enums inválidos.
+- **Busca por ID e 404:** Retorno `200 OK` para itens existentes e `404 Not Found` com mensagem amigável para inexistentes.
+- **Paginação e Filtros:** Testes com conjuntos de dados múltiplos validando parâmetros `page`, `size`, `status`, `priority` e `search`.
+- **Atualização Total (PUT) e Parcial (PATCH):** Garantia de que atualizações parciais não sobrescrevem campos não enviados.
+- **Deleção (DELETE):** Validação de status `204 No Content` e verificação posterior de exclusão física.
 
-Execute pelo script facilitador:
+### Como rodar os testes:
+
 ```bash
+# Pelo script facilitador:
 ./run.sh test
-```
 
-Ou diretamente pelo virtualenv:
-```bash
+# Ou diretamente pelo pytest:
 .venv/bin/pytest
 ```
 
-Você verá a saída com todos os **18 testes aprovados** e a tabela de cobertura com **100%**:
-
+**Resultado dos Testes:**
 ```text
-======================== 18 passed, 1 warning in 0.30s =========================
-TOTAL: 100% de cobertura
+======================== 18 passed in 0.30s =========================
+TOTAL COVERAGE: 100%
 ```
 
 ---
 
-### 2. Iniciar a API
+## 🚀 Como Executar o Projeto Localmente
 
-Para rodar o servidor em modo de desenvolvimento com recarregamento automático (*live reload*):
+### Pré-requisitos
+- Python 3.10+ (testado no Python 3.14)
+- Git
 
+### 1. Clonar o repositório
+```bash
+git clone https://github.com/eltonshadow/meu-primeiro-api.git
+cd meu-primeiro-api
+```
+
+### 2. Criar e ativar o ambiente virtual
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+### 3. Iniciar o servidor
 ```bash
 ./run.sh start
 ```
-
-Ou manualmente:
-```bash
-.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-```
-
-A API estará disponível em: `http://localhost:8000`
+*O servidor estará disponível em: `http://localhost:8000`*
 
 ---
 
-## 📖 Documentação Interativa (OpenAPI / Swagger)
+## 📖 Documentação Interativa da API
 
-Ao rodar a API, você pode testar todos os endpoints diretamente pelo navegador:
-
-- **Swagger UI:** [http://localhost:8000/docs](http://localhost:8000/docs)
-- **ReDoc:** [http://localhost:8000/redoc](http://localhost:8000/redoc)
-- **OpenAPI JSON:** [http://localhost:8000/openapi.json](http://localhost:8000/openapi.json)
+Com a aplicação rodando, acesse:
+- **Swagger UI:** [http://localhost:8000/docs](http://localhost:8000/docs) (interface interativa para testar as requisições)
+- **ReDoc:** [http://localhost:8000/redoc](http://localhost:8000/redoc) (documentação técnica detalhada)
 
 ---
 
-## 📌 Rotas da API
+## 📌 Rotas Disponíveis
 
-### Healthcheck
-- `GET /health` - Retorna o status de integridade do serviço.
-
-### Tarefas (`/api/v1/tasks`)
-
-| Método | Endpoint | Status | Descrição |
+| Método | Rota | Status Esperado | Descrição |
 |---|---|---|---|
-| `POST` | `/api/v1/tasks` | `201 Created` | Cria uma nova tarefa |
-| `GET` | `/api/v1/tasks` | `200 OK` | Lista tarefas com paginação (`page`, `size`) e filtros (`status`, `priority`, `search`) |
-| `GET` | `/api/v1/tasks/{id}` | `200 OK` | Busca detalhes de uma tarefa por ID (ou `404 Not Found`) |
-| `PUT` | `/api/v1/tasks/{id}` | `200 OK` | Atualização completa de uma tarefa (ou `404`) |
-| `PATCH` | `/api/v1/tasks/{id}` | `200 OK` | Atualização parcial (ex: alterar apenas status) |
-| `DELETE` | `/api/v1/tasks/{id}` | `204 No Content` | Remove uma tarefa (ou `404`) |
+| `GET` | `/health` | `200 OK` | Verificação de integridade da API |
+| `POST` | `/api/v1/tasks` | `201 Created` | Criar nova tarefa |
+| `GET` | `/api/v1/tasks` | `200 OK` | Listar tarefas com filtros e paginação |
+| `GET` | `/api/v1/tasks/{id}` | `200 OK` / `404` | Buscar tarefa por ID |
+| `PUT` | `/api/v1/tasks/{id}` | `200 OK` / `404` | Atualização completa de uma tarefa |
+| `PATCH` | `/api/v1/tasks/{id}` | `200 OK` / `404` | Atualização parcial (ex: status) |
+| `DELETE` | `/api/v1/tasks/{id}` | `204 No Content` / `404` | Excluir uma tarefa |
 
 ---
 
-## 💡 Exemplos de Requisições via cURL
+## 💡 Exemplos de Chamadas via cURL
 
-### 1. Criar uma tarefa
+**1. Criar uma tarefa:**
 ```bash
 curl -X POST http://localhost:8000/api/v1/tasks \
   -H "Content-Type: application/json" \
   -d '{
-    "title": "Configurar pipeline CI/CD",
-    "description": "Adicionar GitHub Actions para rodar pytest automaticamente",
-    "status": "todo",
+    "title": "Estudar Arquitetura Backend",
+    "description": "Praticar FastAPI, Pydantic e testes automatizados",
+    "status": "in_progress",
     "priority": "high"
   }'
 ```
 
-### 2. Listar tarefas com filtros e paginação
+**2. Listar tarefas com filtro:**
 ```bash
-curl "http://localhost:8000/api/v1/tasks?page=1&size=10&status=todo&priority=high"
+curl "http://localhost:8000/api/v1/tasks?status=in_progress&priority=high"
 ```
 
-### 3. Atualizar status de uma tarefa (PATCH)
+**3. Atualizar parcialmente (concluir tarefa):**
 ```bash
 curl -X PATCH http://localhost:8000/api/v1/tasks/1 \
   -H "Content-Type: application/json" \
   -d '{"status": "done"}'
 ```
 
-### 4. Deletar uma tarefa
-```bash
-curl -X DELETE http://localhost:8000/api/v1/tasks/1 -i
-```
-
 ---
 
-## 🛡️ Padrões e Boas Práticas Adotadas
+## 👤 Autor
 
-1. **Injeção de Dependências (`Depends(get_db)`):** Facilita testes, desacopla o ciclo de vida da sessão e garante que conexões sejam sempre fechadas.
-2. **Isolamento de Testes com SQLite In-Memory (`StaticPool`):** Cada teste roda em um banco limpo e rápido na memória RAM, sem deixar resíduos no disco.
-3. **Separação de Camadas:**
-   - `models.py`: Modelo relacional do banco.
-   - `schemas.py`: Contrato de dados (Pydantic), garantindo que dados de entrada sejam validados antes de tocar o banco.
-   - `crud.py`: Operações de leitura e escrita isoladas dos controladores HTTP.
-   - `routers/`: Manipulação de requisições e respostas HTTP.
+Desenvolvido por **Elton**  
+- **GitHub:** [@eltonshadow](https://github.com/eltonshadow)
