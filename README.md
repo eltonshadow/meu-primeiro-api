@@ -1,4 +1,4 @@
-# Task Manager API REST com Testes Automatizados
+# meu primeiro API - API REST com Testes Automatizados
 
 API RESTful completa desenvolvida com **FastAPI**, **SQLAlchemy** e **Pydantic**, acompanhada de uma suíte robusta de testes automatizados com **pytest** e relatório de cobertura (**100% de coverage**).
 

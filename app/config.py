@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    APP_NAME: str = "Task Manager API"
+    APP_NAME: str = "meu primeiro API"
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = False
     DATABASE_URL: str = "sqlite:///./tasks.db"
